@@ -7,11 +7,17 @@
 # BlueJ files
 *.ctxt
 
+# Output
+/visuals-maker/frames/*.png
+/visuals-maker/img/*.gif
+/visuals-maker/img/*.png
+/visuals-maker/*.gif
+/visuals-maker/*.png
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear

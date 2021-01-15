@@ -1,0 +1,7 @@
+n			 size is 2^n x 2^n
+x, y 		 xth row, yth column (top-to-bottom, left-to-right) (ensure that each is in [1,2^n])
+k			 one "square" is k x k pixels, wall is floor(k/2) pixels thick
+palette_name for final output's file name
+aR, aG, aB	 color format is RGB
+bR, bG, bB	 A and B are "base" checkerboard colors
+cR, cG, cB   C is the "inside" piece color

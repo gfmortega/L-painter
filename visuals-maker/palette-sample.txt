@@ -1,0 +1,44 @@
+autumn
+233, 196, 106
+244, 162, 97
+231, 111, 81
+
+retro
+233, 196, 106
+42, 157, 143
+38, 70, 83
+
+hyacinth
+94, 96, 206
+78, 168, 222
+116, 0, 184
+
+turquoise
+144, 224, 239
+0, 180, 216
+0, 150, 199
+
+racer
+14213d
+fca311
+e5e5e5
+
+fairy
+cbc0d3
+efd3d7
+dee2ff
+
+orange-juice
+ff7b00
+ffb700
+ffea00
+
+bubblegum
+1b9aaa
+ef476f
+ffc43d
+
+valentine
+bfd7ea
+ff5a5f
+c81d25
