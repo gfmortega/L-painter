@@ -17,7 +17,7 @@ The proof is through a clever inductive argument.
   <img src="https://raw.githubusercontent.com/gfmortega/L-painter/main/images-for-readme/solution-place-L-center.png">
 </p>
 
-Divide the 2^N x 2^N square into four quadrants, each 2^(N-1) x 2^(N-1) in size.  Now, the hole must be in one of these quadrants.  Place an L at the center, where the four quadrants meet, such that we place one square in every quadrant that _doesn't_ have the hole.  Notice then that we have four recursive subproblems---a 2^(N-1) x 2^(N-1) grid to tile with one square missing somewhere---that we can inductively apply this same strategy to.  We eventually hit our base case at N=1, which is clearly tile-able.
+Divide the 2^N x 2^N square into four quadrants, each 2^(N-1) x 2^(N-1) in size.  Now, the hole must be in one of these quadrants.  Place an L at the center, where the four quadrants meet, such that we place one square in every quadrant that _doesn't_ have the hole.  Notice then that we have four recursive subproblems---each a 2^(N-1) x 2^(N-1) grid to tile with one square missing somewhere---that we can inductively apply this same strategy to.  We eventually hit our base case at N=1, which is clearly tile-able.
 
 # Three-colorability of the tiles
 
