@@ -23,22 +23,24 @@ public class MainFrame extends JFrame
 	private JButton redoButton;
 	private JButton clearButton;
 	private JButton newGameButton;
+	private JButton showHideLatticeButton;
+	private JButton enhanceLatticeButton;
+
+	Lattice lattice;
 	
 	public MainFrame()
 	{
-		JOptionPane.showMessageDialog(null,"Welcome to L-painter!  The goal of this game is to tile the given board entirely out of Ls.\nLeft-click to paint the highlighted cells.\nRight-click or Ctrl+click to rotate the direction of your L.\nHave fun!");
+		JOptionPane.showMessageDialog(null,"Welcome to L-Triomino Tiling!  The goal of this game is to tile the given board, using only Ls.\nLeft-click to place an L on the highlighted cells.\nRight-click or Ctrl+click to rotate the direction of your L.\nHave fun!");
 		GridPainter = new MyComponent();
 		mouseController = new MouseControl(this);
 		moveController = new MoveControl();
 		
-		if(!newGame())
-			return;
-			
 		this.add(GridPainter);
 		setUpButtons();
+
+		if(!newGame())
+			return;
 		
-		this.getContentPane().setPreferredSize(new Dimension(width,height));
-		this.pack();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
 	}
@@ -52,6 +54,8 @@ public class MainFrame extends JFrame
 		redoButton = new JButton("Redo");
 		clearButton = new JButton("Clear");
 		newGameButton = new JButton("New Game");
+		showHideLatticeButton = new JButton("Lattice");
+		enhanceLatticeButton = new JButton("Enhance");
 		
 		ActionListener undoListener = new ActionListener()
 		{
@@ -84,9 +88,12 @@ public class MainFrame extends JFrame
 			{
 				if(gameIsWon())
 					return;
-				while(!moveController.undoStack.empty())
-					undoMove(moveController.undoMove());
-				moveController.clearMoves();
+				if(JOptionPane.showConfirmDialog(null,"Are you sure you want to clear the board?")==JOptionPane.YES_OPTION)
+				{
+					while(!moveController.undoStack.empty())
+						undoMove(moveController.undoMove());
+					moveController.clearMoves();
+				}
 			}
 		};
 		clearButton.addActionListener(clearListener);
@@ -102,15 +109,47 @@ public class MainFrame extends JFrame
 			}
 		};
 		newGameButton.addActionListener(newGameListener);
+
+		ActionListener showHideLatticeListener = new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent ae)
+			{
+				toggleLattice();
+				repaint();
+			}
+		};
+		showHideLatticeButton.addActionListener(showHideLatticeListener);
+
+		ActionListener enhanceLatticeListener = new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent ae)
+			{
+				enhanceLattice();
+				repaint();
+			}
+		};
+		enhanceLatticeButton.addActionListener(enhanceLatticeListener);
 		
 		Container buttonPane = new Container();
-		buttonPane.setLayout(new GridLayout(2,2));
+		buttonPane.setLayout(new GridLayout(3,2));
 		buttonPane.add(undoButton);
 		buttonPane.add(redoButton);
 		buttonPane.add(clearButton);
 		buttonPane.add(newGameButton);
+		buttonPane.add(showHideLatticeButton);
+		buttonPane.add(enhanceLatticeButton);
 		
 		this.getContentPane().add(buttonPane,BorderLayout.SOUTH);
+	}
+	private void toggleLattice()
+	{
+		lattice.toggleVisibility();
+	}
+	private void enhanceLattice()
+	{
+		lattice.level_up();
 	}
 	private void undoMove(Move m)
 	{
@@ -128,31 +167,77 @@ public class MainFrame extends JFrame
 		currD = temp;
 		repaint();
 	}
+	void setFont(int n)
+	{
+		Font f = new Font("Default", Font.BOLD, n);
+		// undoButton.setFont(f);
+		// redoButton.setFont(f);
+		// clearButton.setFont(f);
+		// newGameButton.setFont(f);
+		// showHideLatticeButton.setFont(f);
+		// enhanceLatticeButton.setFont(f);
+	}
 	private boolean newGame()
 	{
-		boolean invalid_N = true;
+		Object[] options = {"2 x 2",
+                    "4 x 4",
+                    "8 x 8",
+                	"16 x 16"};
+
+        JComboBox optionList = new JComboBox(options);
+                optionList.setSelectedIndex(0);
+
+		String s = null;
+		while(s == null)
+			s = (String)JOptionPane.showInputDialog(
+			this,
+		    "What sized board would you like to tile?",
+		    "Select Screen",
+		    JOptionPane.PLAIN_MESSAGE,
+		    null,
+		    options,
+		    -1);
+
 		int n = 1;
-		while(invalid_N)
+		if(s.equals(options[0]))
 		{
-			try
-			{
-				String s = JOptionPane.showInputDialog(null,"Create a 2^N x 2^N board.  Input N from 2 to 4:");
-				if(s==null)
-					return false;
-				n = Integer.parseInt(s);
-				invalid_N = !(2 <= n && n <= 4);
-			}
-			catch(Exception e)
-			{
-			}
+			n = 1;
+			GameData.tileSize = 100;
+			showHideLatticeButton.setVisible(false);
+			enhanceLatticeButton.setVisible(false);
 		}
+		else if(s.equals(options[1]))
+		{
+			n = 2;
+			GameData.tileSize = 50;
+			showHideLatticeButton.setVisible(true);
+			enhanceLatticeButton.setVisible(false);
+		}
+		else if(s.equals(options[2]))
+		{
+			n = 3;
+			GameData.tileSize = 50;
+			showHideLatticeButton.setVisible(true);
+			enhanceLatticeButton.setVisible(true);
+		}
+		else if(s.equals(options[3]))
+		{
+			n = 4;
+			GameData.tileSize = 30;
+			showHideLatticeButton.setVisible(true);
+			enhanceLatticeButton.setVisible(true);
+		}
+
+
 		GameData.shuffleColors();
 		
 		grid_size = (1<<n);
-		GameData.tileSize = GameData.preferredSize/grid_size + (GameData.preferredSize%grid_size==0 ? 0 : 1);
+		
 		width = grid_size*GameData.tileSize;
-		height = grid_size*GameData.tileSize + 50;
-				
+		height = grid_size*GameData.tileSize + 75;
+		this.getContentPane().setPreferredSize(new Dimension(width,height));
+		this.pack();		
+
 		grid_information = new Tile[grid_size+4][grid_size+4];
 		for(int i = 0; i <= grid_size+3; i++)
 			for(int j = 0; j <= grid_size+3; j++)
@@ -176,7 +261,9 @@ public class MainFrame extends JFrame
 		moveController.clearMoves();
 		
 		successfulClicks = 0;
-		this.setTitle("The L Painter");
+		this.setTitle("L-Triomino Tiling");
+
+		lattice = new Lattice(width, height, n-1);
 		
 		return true;
 	}
@@ -281,10 +368,10 @@ public class MainFrame extends JFrame
 		
 		if(gameIsWon())
 		{
-			this.setTitle("Successfully L-painted");
+			this.setTitle("Successfully L-tiled");
 			toggleHighlights();
 			clearHover();
-			JOptionPane.showMessageDialog(null,"Congratulations, you have L-painted this board!");
+			JOptionPane.showMessageDialog(null,"Congratulations, you have L-tiled this board!");
 		}
 	}
 	public void toggleHighlights()
@@ -313,6 +400,7 @@ public class MainFrame extends JFrame
 			for(int i = 1; i <= grid_size; i++)
 				for(int j = 1; j <= grid_size; j++)
 					grid_information[i+1][j+1].draw(g2d);
+			lattice.draw(g2d);
 		}
 	}
 }
